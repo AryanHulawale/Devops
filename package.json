@@ -29,13 +29,19 @@
   "dependencies": {
     "@eslint/js": "^10.0.1",
     "@neondatabase/serverless": "^1.1.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "eslint": "^10.6.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "express": "^5.2.1",
-    "prettier": "^3.9.4"
+    "helmet": "^8.3.0",
+    "morgan": "^1.11.0",
+    "prettier": "^3.9.4",
+    "winston": "^3.19.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.10"
