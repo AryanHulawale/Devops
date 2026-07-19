@@ -1,7 +1,7 @@
-import logger from '../config/logger';
+import logger from '../config/logger.js';
 import cookies from '../utils/cookies.js';
 import jwttoken from '../utils/jwt.js';
-import { signupSchema, signinSchema } from '../validations/auth.validation.js';
+import { signupSchema, signInSchema } from '../validations/auth.validations.js';
 import { formatValidationError } from '../utils/format.js';
 import { createUser, authenticateUser } from '../services/auth.service.js';
 
@@ -44,7 +44,7 @@ export const signup = async (req, res, next) => {
 
 export const signin = async (req, res, next) => {
     try {
-        const validationResult = signinSchema.safeParse(req.body);
+        const validationResult = signInSchema.safeParse(req.body);
 
         if (!validationResult.success) {
             return res.status(400).json({
