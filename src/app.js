@@ -5,6 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import logger from './config/logger.js';
 import authRoutes from './routes/auth.routes.js';
+import userRoutes from './routes/users.routes.js';
 import { securityMiddleware } from './middlewares/security.middleware.js';
 
 
@@ -26,6 +27,7 @@ app.get('/health', (req, res) => {
 app.use(securityMiddleware)
 
 app.use("/api/auth",authRoutes)
+app.use("/api/users", userRoutes)
 
 
 
