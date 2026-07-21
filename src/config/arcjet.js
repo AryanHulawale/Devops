@@ -1,5 +1,4 @@
 import arcjet, { shield, detectBot, slidingWindow } from "@arcjet/node";
-import { interval } from "drizzle-orm/pg-core";
 
 
 const aj = arcjet({
@@ -13,17 +12,13 @@ const aj = arcjet({
             mode: "LIVE",
             allow: [
                 "CATEGORY:SEARCH_ENGINE",
-                "CATEGORY:PREVIEW"
+                "CATEGORY:PREVIEW",
+                "CATEGORY:TOOL",
             ],
-        }),
-
-        slidingWindow({
-            mode: "LIVE",
-            interval: "2s",
-            max: 5
         }),
 
     ],
 });
 
 export default aj
+

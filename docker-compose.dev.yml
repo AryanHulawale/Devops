@@ -1,0 +1,65 @@
+# =============================================================================
+# Docker Compose — DEVELOPMENT
+# Runs the app alongside Neon Local proxy for local development
+# =============================================================================
+# Usage:
+#   docker compose -f docker-compose.dev.yml up --build
+#   docker compose -f docker-compose.dev.yml down
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Neon Local Proxy
+  # Creates an ephemeral database branch from PARENT_BRANCH_ID.
+  # The branch is automatically deleted when the container stops.
+  # ---------------------------------------------------------------------------
+  neon-local:
+    image: neondatabase/neon_local:latest
+    container_name: neon-local
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.development
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "localhost", "-p", "5432", "-U", "neon"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - dev-network
+
+  # ---------------------------------------------------------------------------
+  # Application
+  # Connects to the Neon Local proxy for database operations.
+  # Source code is bind-mounted for live reload during development.
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devops-app-dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.development
+    environment:
+      # Override to ensure we connect to neon-local service
+      DATABASE_URL: postgres://neon:npg@neon-local:5432/neondb
+      NEON_LOCAL: "true"
+      NODE_ENV: development
+    volumes:
+      # Bind mount source for live reload (node --watch)
+      - ./src:/app/src:ro
+      - ./drizzle:/app/drizzle:ro
+      - ./drizzle.config.js:/app/drizzle.config.js:ro
+    depends_on:
+      neon-local:
+        condition: service_healthy
+    networks:
+      - dev-network
+    restart: unless-stopped
+
+networks:
+  dev-network:
+    driver: bridge

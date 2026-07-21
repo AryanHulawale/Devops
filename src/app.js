@@ -17,16 +17,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 
+// Health check route — placed BEFORE security middleware so Docker
+// healthchecks (wget) are not blocked by Arcjet bot detection.
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString(), uptime: process.uptime() });
+});
 
 app.use(securityMiddleware)
 
 app.use("/api/auth",authRoutes)
 
 
-
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString(), uptime: process.uptime() });
-});
 
 app.get('/api', (req, res) => {
   res.status(200).json({ message: 'Acquisitions API is running!' });

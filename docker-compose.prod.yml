@@ -1,0 +1,49 @@
+# =============================================================================
+# Docker Compose — PRODUCTION
+# Runs the app only, connecting directly to Neon Cloud database.
+# No Neon Local proxy is used in production.
+# =============================================================================
+# Usage:
+#   docker compose -f docker-compose.prod.yml up --build -d
+#   docker compose -f docker-compose.prod.yml down
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Application
+  # Connects directly to Neon Cloud via DATABASE_URL.
+  # All secrets are injected via environment variables — nothing is hardcoded.
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devops-app-prod
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.production
+    environment:
+      NODE_ENV: production
+      NEON_LOCAL: "false"
+      # DATABASE_URL, JWT_SECRET, ARCJET_KEY come from .env.production
+      # In CI/CD, override with real secrets:
+      #   docker compose -f docker-compose.prod.yml up -d \
+      #     -e DATABASE_URL=postgres://... \
+      #     -e JWT_SECRET=... \
+      #     -e ARCJET_KEY=...
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.5"
+    restart: unless-stopped
+    networks:
+      - prod-network
+
+networks:
+  prod-network:
+    driver: bridge

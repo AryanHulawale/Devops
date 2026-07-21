@@ -1,2 +1,17 @@
+# Dependencies
 node_modules
-.env.*
+
+# Environment files (contain secrets)
+.env
+.env.development
+.env.production
+
+# Neon Local metadata
+.neon_local/
+
+# Logs
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
