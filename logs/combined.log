@@ -37,3 +37,9 @@
 {"level":"info","message":"::1 - - [19/Jul/2026:16:48:35 +0000] \"GET /health HTTP/1.1\" 403 68 \"-\" \"PostmanRuntime/7.53.0\"","service":"acquisitions-api","timestamp":"2026-07-19T16:48:35.126Z"}
 {"ip":"::1","level":"warn","message":"Bot request Blocked ","path":"/health","service":"acquisitions-api","timestamp":"2026-07-19T16:48:38.504Z","userAgent":"PostmanRuntime/7.53.0"}
 {"level":"info","message":"::1 - - [19/Jul/2026:16:48:38 +0000] \"GET /health HTTP/1.1\" 403 68 \"-\" \"PostmanRuntime/7.53.0\"","service":"acquisitions-api","timestamp":"2026-07-19T16:48:38.507Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [22/Jul/2026:15:42:21 +0000] \"GET /health HTTP/1.1\" 200 73 \"-\" \"-\"","service":"acquisitions-api","timestamp":"2026-07-22T15:42:21.735Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [22/Jul/2026:15:42:21 +0000] \"GET /api HTTP/1.1\" 200 42 \"-\" \"-\"","service":"acquisitions-api","timestamp":"2026-07-22T15:42:21.757Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [22/Jul/2026:15:42:21 +0000] \"GET /nonexistent HTTP/1.1\" 404 27 \"-\" \"-\"","service":"acquisitions-api","timestamp":"2026-07-22T15:42:21.766Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [22/Jul/2026:15:42:51 +0000] \"GET /health HTTP/1.1\" 200 73 \"-\" \"-\"","service":"acquisitions-api","timestamp":"2026-07-22T15:42:51.691Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [22/Jul/2026:15:42:51 +0000] \"GET /api HTTP/1.1\" 200 42 \"-\" \"-\"","service":"acquisitions-api","timestamp":"2026-07-22T15:42:51.708Z"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [22/Jul/2026:15:42:51 +0000] \"GET /nonexistent HTTP/1.1\" 404 27 \"-\" \"-\"","service":"acquisitions-api","timestamp":"2026-07-22T15:42:51.714Z"}

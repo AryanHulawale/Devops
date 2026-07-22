@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+     "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules --localstorage-file=./.jest-localstorage\" jest",
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "lint": "eslint .",
@@ -47,10 +47,13 @@
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.11.0",
     "prettier": "^3.9.4",
+    "supertest": "^7.2.2",
     "winston": "^3.19.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.31.10"
+    "cross-env": "^10.1.0",
+    "drizzle-kit": "^0.31.10",
+    "jest": "^30.4.2"
   }
 }
