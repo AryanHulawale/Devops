@@ -18,7 +18,7 @@ jobs:
 
     env:
       NODE_ENV: test
-      NODE_OPTIONS: "--experimental-vm-modules --localstorage-file=./.jest-localstorage"
+      NODE_OPTIONS: "--experimental-vm-modules"
       DATABASE_URL: "postgres://test:test@localhost:5432/testdb"
       JWT_SECRET: "ci-test-secret-not-for-production"
       ARCJET_KEY: "test-key"
