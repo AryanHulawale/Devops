@@ -1,0 +1,96 @@
+# =============================================================================
+# Lint & Format — GitHub Actions Workflow
+# Runs ESLint and Prettier auto-fix, then commits formatted code back.
+# =============================================================================
+
+name: Lint & Format
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  lint-and-format:
+    name: ESLint & Prettier Auto-Fix
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # -----------------------------------------------------------------
+      # Auto-fix: run Prettier format and ESLint fix
+      # -----------------------------------------------------------------
+      - name: Run Prettier (auto-format)
+        run: npm run format
+
+      - name: Run ESLint (auto-fix)
+        run: npm run lint:fix
+        continue-on-error: true
+
+      # -----------------------------------------------------------------
+      # Commit and push fixes (if any files changed)
+      # -----------------------------------------------------------------
+      - name: Commit and push fixes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: auto-fix lint and formatting issues"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+
+      # -----------------------------------------------------------------
+      # Verify: run checks again to catch unfixable issues
+      # -----------------------------------------------------------------
+      - name: Verify ESLint (no remaining issues)
+        id: eslint_verify
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Verify Prettier (all files formatted)
+        id: prettier_verify
+        run: npm run format:check
+        continue-on-error: true
+
+      # -----------------------------------------------------------------
+      # Summary
+      # -----------------------------------------------------------------
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "## 🔍 Lint & Format Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.eslint_verify.outcome }}" == "success" ]; then
+            echo "✅ **ESLint** — No issues" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **ESLint** — Unfixable issues remain. Run \`npm run lint\` locally to review." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ steps.prettier_verify.outcome }}" == "success" ]; then
+            echo "✅ **Prettier** — All files formatted" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Prettier** — Formatting issues remain. Run \`npm run format\` locally." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Fail if unfixable issues remain
+        if: steps.eslint_verify.outcome == 'failure' || steps.prettier_verify.outcome == 'failure'
+        run: |
+          echo "::error::Auto-fix resolved some issues but unfixable problems remain. Check the logs."
+          exit 1

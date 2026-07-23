@@ -1,0 +1,105 @@
+# =============================================================================
+# Tests — GitHub Actions Workflow
+# Runs Jest tests with coverage on pushes and PRs to main/staging.
+# =============================================================================
+
+name: Tests
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  test:
+    name: Jest Tests
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+      NODE_OPTIONS: "--experimental-vm-modules --localstorage-file=./.jest-localstorage"
+      DATABASE_URL: "postgres://test:test@localhost:5432/testdb"
+      JWT_SECRET: "ci-test-secret-not-for-production"
+      ARCJET_KEY: "test-key"
+      ARCJET_ENV: "development"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # -----------------------------------------------------------------
+      # Run Tests
+      # -----------------------------------------------------------------
+      - name: Run tests
+        id: tests
+        run: npm test -- --ci --forceExit 2>&1 | tee test-output.txt
+        continue-on-error: true
+
+      # -----------------------------------------------------------------
+      # Annotate test failures
+      # -----------------------------------------------------------------
+      - name: Annotate test failures
+        if: steps.tests.outcome == 'failure'
+        run: |
+          echo "::error::Jest tests failed. Check the test output above for details."
+          echo "::notice::Run 'npm test' locally to reproduce and debug failing tests."
+
+      # -----------------------------------------------------------------
+      # Upload coverage report as artifact
+      # -----------------------------------------------------------------
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+      # -----------------------------------------------------------------
+      # Generate GitHub step summary
+      # -----------------------------------------------------------------
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.tests.outcome }}" == "success" ]; then
+            echo "✅ **All tests passed!**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Some tests failed.** See the logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Extract and display the coverage table from Jest output
+          if [ -f test-output.txt ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            # Extract lines between the coverage table markers
+            sed -n '/^-.*|.*|.*|.*|.*$/,/^-.*|.*|.*|.*|.*$/p' test-output.txt >> $GITHUB_STEP_SUMMARY || echo "Coverage data not available" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> 📦 Full coverage report uploaded as artifact (retained for 30 days)" >> $GITHUB_STEP_SUMMARY
+
+      # -----------------------------------------------------------------
+      # Fail the workflow if tests failed
+      # -----------------------------------------------------------------
+      - name: Fail if tests failed
+        if: steps.tests.outcome == 'failure'
+        run: |
+          echo "Tests failed. See annotations and logs for details."
+          exit 1
