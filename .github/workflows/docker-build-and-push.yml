@@ -1,14 +1,14 @@
 # =============================================================================
 # Docker Build & Push — GitHub Actions Workflow
 # Builds a multi-platform Docker image and pushes to Docker Hub.
-# Triggered on pushes to main or manually via workflow_dispatch.
+# Triggered on pushes to master or manually via workflow_dispatch.
 # =============================================================================
 
 name: Docker Build & Push
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -55,7 +55,7 @@ jobs:
             type=ref,event=branch
             # Tag with full commit SHA
             type=sha,format=long
-            # Tag as 'latest' on main branch
+            # Tag as 'latest' on master branch
             type=raw,value=latest,enable={{is_default_branch}}
             # Tag with timestamp: prod-YYYYMMDD-HHmmss
             type=raw,value=prod-{{date 'YYYYMMDD-HHmmss'}}

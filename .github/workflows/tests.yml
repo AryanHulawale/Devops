@@ -1,15 +1,15 @@
 # =============================================================================
 # Tests — GitHub Actions Workflow
-# Runs Jest tests with coverage on pushes and PRs to main/staging.
+# Runs Jest tests with coverage on pushes and PRs to master/staging.
 # =============================================================================
 
 name: Tests
 
 on:
   push:
-    branches: [main, staging]
+    branches: [master, staging]
   pull_request:
-    branches: [main, staging]
+    branches: [master, staging]
 
 jobs:
   test:
