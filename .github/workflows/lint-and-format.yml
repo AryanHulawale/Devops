@@ -11,14 +11,15 @@ on:
   pull_request:
     branches: [master, staging]
 
+# ✅ Permissions applied to all jobs
+permissions:
+  contents: write
+  workflows: write
+
 jobs:
   lint-and-format:
     name: ESLint & Prettier Auto-Fix
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-      workflows: write
 
     steps:
       - name: Checkout code
@@ -36,9 +37,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # -----------------------------------------------------------------
-      # Auto-fix: run Prettier format and ESLint fix
-      # -----------------------------------------------------------------
       - name: Run Prettier (auto-format)
         run: npm run format
 
@@ -46,9 +44,6 @@ jobs:
         run: npm run lint:fix
         continue-on-error: true
 
-      # -----------------------------------------------------------------
-      # Commit and push fixes (if any files changed)
-      # -----------------------------------------------------------------
       - name: Commit and push fixes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
@@ -56,9 +51,6 @@ jobs:
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
 
-      # -----------------------------------------------------------------
-      # Verify: run checks again to catch unfixable issues
-      # -----------------------------------------------------------------
       - name: Verify ESLint (no remaining issues)
         id: eslint_verify
         run: npm run lint
@@ -69,21 +61,16 @@ jobs:
         run: npm run format:check
         continue-on-error: true
 
-      # -----------------------------------------------------------------
-      # Summary
-      # -----------------------------------------------------------------
       - name: Generate summary
         if: always()
         run: |
           echo "## 🔍 Lint & Format Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
           if [ "${{ steps.eslint_verify.outcome }}" == "success" ]; then
             echo "✅ **ESLint** — No issues" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **ESLint** — Unfixable issues remain. Run \`npm run lint\` locally to review." >> $GITHUB_STEP_SUMMARY
           fi
-
           if [ "${{ steps.prettier_verify.outcome }}" == "success" ]; then
             echo "✅ **Prettier** — All files formatted" >> $GITHUB_STEP_SUMMARY
           else
