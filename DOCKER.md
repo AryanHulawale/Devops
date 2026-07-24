@@ -22,6 +22,7 @@ Here's a list of every file that was created or changed:
 **What it is:** A recipe that tells Docker how to build your app into a container image.
 
 **What it does:**
+
 - Uses Node.js 22 on Alpine Linux (a tiny, secure Linux version)
 - Installs only the packages your app needs (keeps the image small)
 - Copies your source code and database migration files into the image
@@ -39,6 +40,7 @@ Here's a list of every file that was created or changed:
 **What it is:** A file that tells Docker to run **two containers together** for local development.
 
 **What it does:**
+
 - Starts a **Neon Local proxy** container (`neon-local`) — this creates a temporary copy (called an "ephemeral branch") of your real database. You can break things here without worrying.
 - Starts your **app** container — connects to the Neon Local proxy instead of your real database
 - The app waits for the proxy to be ready before starting
@@ -47,10 +49,10 @@ Here's a list of every file that was created or changed:
 
 **The two services:**
 
-| Service | What it does |
-|---------|-------------|
-| `neon-local` | Neon's local proxy — creates a throwaway copy of your database |
-| `app` | Your Express.js API — talks to `neon-local` instead of the real DB |
+| Service      | What it does                                                       |
+| ------------ | ------------------------------------------------------------------ |
+| `neon-local` | Neon's local proxy — creates a throwaway copy of your database     |
+| `app`        | Your Express.js API — talks to `neon-local` instead of the real DB |
 
 ---
 
@@ -59,6 +61,7 @@ Here's a list of every file that was created or changed:
 **What it is:** A file that runs **only your app** for production.
 
 **What it does:**
+
 - Runs just the app container — **no Neon Local proxy** (you don't need a proxy in production)
 - The app connects directly to your real Neon cloud database using the `DATABASE_URL` from `.env.production`
 - Has memory and CPU limits set (512MB RAM, 1 CPU) so the container can't hog all server resources
@@ -71,6 +74,7 @@ Here's a list of every file that was created or changed:
 **What it is:** Environment variables for local development.
 
 **What it does:**
+
 - Sets `DATABASE_URL` to point to the Neon Local proxy (`neon-local:5432`) instead of the real cloud database
 - Sets `NEON_LOCAL=true` — this tells the app to use special settings for the local proxy
 - Contains placeholders for your Neon API key, project ID, and parent branch ID (you fill these in)
@@ -83,6 +87,7 @@ Here's a list of every file that was created or changed:
 **What it is:** Environment variables for production deployment.
 
 **What it does:**
+
 - Sets `DATABASE_URL` to point to your real Neon cloud database (you replace the placeholder with your actual URL)
 - Sets `NEON_LOCAL=false` — the app connects directly to Neon, no proxy
 - Uses production log level (`warn` — only logs warnings and errors, not noisy debug info)
@@ -95,6 +100,7 @@ Here's a list of every file that was created or changed:
 **What it is:** Like `.gitignore`, but for Docker. Tells Docker what files to **skip** when building the image.
 
 **Why it matters:**
+
 - Without this, Docker would copy `node_modules` (huge!), `.env` files (secrets!), and `.git` (unnecessary) into the image
 - Makes your Docker builds faster and your images smaller
 - Prevents accidentally baking secrets into your Docker image
@@ -106,6 +112,7 @@ Here's a list of every file that was created or changed:
 **What it is:** A startup script that runs every time the container starts.
 
 **What it does (in order):**
+
 1. If running in dev mode (`NEON_LOCAL=true`), waits for the Neon Local proxy to be ready (retries up to 30 times)
 2. Runs Drizzle database migrations (`npx drizzle-kit migrate`) — so your database tables are always up to date
 3. Starts the app (`node src/index.js`)
@@ -117,6 +124,7 @@ Here's a list of every file that was created or changed:
 **What it is:** A tiny script that checks if the app is alive.
 
 **What it does:**
+
 - Sends a request to `http://localhost:3000/health`
 - If it gets a response → the app is healthy ✅
 - If it doesn't → Docker marks the container as unhealthy ❌
@@ -137,22 +145,24 @@ You're reading it! Documentation for the whole Docker setup.
 **What changed:** Added automatic detection for Neon Local proxy.
 
 **Before:**
+
 ```javascript
-import "dotenv/config"
-import { neon, neonConfig } from "@neondatabase/serverless"
-import { drizzle } from "drizzle-orm/neon-http"
+import 'dotenv/config';
+import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 
-const sql = neon(process.env.DATABASE_URL)
-const db = drizzle(sql)
+const sql = neon(process.env.DATABASE_URL);
+const db = drizzle(sql);
 
-export {db,sql}
+export { db, sql };
 ```
 
 **After:**
+
 ```javascript
-import "dotenv/config"
-import { neon, neonConfig } from "@neondatabase/serverless"
-import { drizzle } from "drizzle-orm/neon-http"
+import 'dotenv/config';
+import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 
 // When NEON_LOCAL=true, configure the driver for local proxy
 if (process.env.NEON_LOCAL === 'true') {
@@ -164,10 +174,10 @@ if (process.env.NEON_LOCAL === 'true') {
   neonConfig.poolQueryViaFetch = true;
 }
 
-const sql = neon(process.env.DATABASE_URL)
-const db = drizzle(sql)
+const sql = neon(process.env.DATABASE_URL);
+const db = drizzle(sql);
 
-export {db,sql}
+export { db, sql };
 ```
 
 **Why:** The Neon serverless driver normally talks to Neon's cloud servers over HTTPS. But when running locally through the Neon Local proxy, it needs to use plain HTTP instead. This `if` block detects the local environment and switches the driver to HTTP mode. **In production, nothing changes** — the `if` block is skipped entirely.
@@ -179,12 +189,14 @@ export {db,sql}
 **What changed:** Fixed a security gap and added new entries.
 
 **Before:**
+
 ```
 node_modules
 .env.*
 ```
 
 **After:**
+
 ```
 # Dependencies
 node_modules
@@ -249,6 +261,7 @@ The key idea: **one codebase, two configurations.**
 ```
 
 The `NEON_LOCAL` flag is what makes the switch:
+
 - `true` → app configures the Neon driver for local HTTP proxy
 - `false` → app uses default Neon driver settings (HTTPS to cloud)
 
@@ -327,7 +340,7 @@ devops-implementation/
 A: A temporary copy of your database. It's created when you start Docker and deleted when you stop. You can experiment freely without affecting your real data.
 
 **Q: Do I need a Neon account for development?**
-A: Yes. Neon Local is a *proxy* to your Neon cloud database — it still needs your cloud account to create branches. But all your dev work happens on throwaway branches, so your real data stays safe.
+A: Yes. Neon Local is a _proxy_ to your Neon cloud database — it still needs your cloud account to create branches. But all your dev work happens on throwaway branches, so your real data stays safe.
 
 **Q: Will this change how the app works in production?**
 A: No. The code change in `database.js` only activates when `NEON_LOCAL=true`. In production (`NEON_LOCAL=false`), the app behaves exactly as before.

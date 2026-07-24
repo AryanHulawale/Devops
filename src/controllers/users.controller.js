@@ -1,5 +1,8 @@
 import logger from '../config/logger.js';
-import { userIdSchema, updateUserSchema } from '../validations/users.validation.js';
+import {
+  userIdSchema,
+  updateUserSchema,
+} from '../validations/users.validation.js';
 import { formatValidationError } from '../utils/format.js';
 import {
   getAllUsers as getAllUsersService,
@@ -93,12 +96,16 @@ export const updateUser = async (req, res, next) => {
 
     // Non-admin users can only update their own information
     if (req.user.role !== 'admin' && req.user.id !== id) {
-      return res.status(403).json({ error: 'You can only update your own information' });
+      return res
+        .status(403)
+        .json({ error: 'You can only update your own information' });
     }
 
     // Only admins can change the "role" field
     if (updates.role && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Only admins can change user roles' });
+      return res
+        .status(403)
+        .json({ error: 'Only admins can change user roles' });
     }
 
     const updatedUser = await updateUserService(id, updates);
@@ -145,7 +152,9 @@ export const deleteUser = async (req, res, next) => {
 
     // Non-admin users can only delete their own account
     if (req.user.role !== 'admin' && req.user.id !== id) {
-      return res.status(403).json({ error: 'You can only delete your own account' });
+      return res
+        .status(403)
+        .json({ error: 'You can only delete your own account' });
     }
 
     await deleteUserService(id);

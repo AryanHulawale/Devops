@@ -19,4 +19,4 @@ const cookies = {
   },
 };
 
-export default cookies
+export default cookies;

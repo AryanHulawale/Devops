@@ -17,11 +17,11 @@ services:
     image: neondatabase/neon_local:latest
     container_name: neon-local
     ports:
-      - "5432:5432"
+      - '5432:5432'
     env_file:
       - .env.development
     healthcheck:
-      test: ["CMD", "pg_isready", "-h", "localhost", "-p", "5432", "-U", "neon"]
+      test: ['CMD', 'pg_isready', '-h', 'localhost', '-p', '5432', '-U', 'neon']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -40,13 +40,13 @@ services:
       dockerfile: Dockerfile
     container_name: devops-app-dev
     ports:
-      - "3000:3000"
+      - '3000:3000'
     env_file:
       - .env.development
     environment:
       # Override to ensure we connect to neon-local service
       DATABASE_URL: postgres://neon:npg@neon-local:5432/neondb
-      NEON_LOCAL: "true"
+      NEON_LOCAL: 'true'
       NODE_ENV: development
     volumes:
       # Bind mount source for live reload (node --watch)

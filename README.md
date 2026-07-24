@@ -26,19 +26,19 @@ A full-stack backend API built with **Express.js**, demonstrating real-world Dev
 
 ## 🛠 Tech Stack
 
-| Category | Technology | Purpose |
-|---|---|---|
-| **Runtime** | Node.js 22 | JavaScript runtime |
-| **Framework** | Express.js 5 | HTTP server & routing |
-| **Database** | Neon (Serverless PostgreSQL) | Cloud-native Postgres |
-| **ORM** | Drizzle ORM | Type-safe SQL queries & migrations |
-| **Auth** | JWT + bcrypt | Stateless authentication & password hashing |
-| **Security** | Helmet, Arcjet, CORS | HTTP hardening, bot detection, rate limiting |
-| **Logging** | Winston + Morgan | Structured logs (file + console) and HTTP request logging |
-| **Validation** | Zod | Runtime schema validation |
-| **Containerization** | Docker + Docker Compose | Multi-stage builds, dev & prod environments |
-| **Code Quality** | ESLint + Prettier | Linting & formatting |
-| **Testing** | Jest + Supertest | Unit & integration tests with coverage |
+| Category             | Technology                   | Purpose                                                   |
+| -------------------- | ---------------------------- | --------------------------------------------------------- |
+| **Runtime**          | Node.js 22                   | JavaScript runtime                                        |
+| **Framework**        | Express.js 5                 | HTTP server & routing                                     |
+| **Database**         | Neon (Serverless PostgreSQL) | Cloud-native Postgres                                     |
+| **ORM**              | Drizzle ORM                  | Type-safe SQL queries & migrations                        |
+| **Auth**             | JWT + bcrypt                 | Stateless authentication & password hashing               |
+| **Security**         | Helmet, Arcjet, CORS         | HTTP hardening, bot detection, rate limiting              |
+| **Logging**          | Winston + Morgan             | Structured logs (file + console) and HTTP request logging |
+| **Validation**       | Zod                          | Runtime schema validation                                 |
+| **Containerization** | Docker + Docker Compose      | Multi-stage builds, dev & prod environments               |
+| **Code Quality**     | ESLint + Prettier            | Linting & formatting                                      |
+| **Testing**          | Jest + Supertest             | Unit & integration tests with coverage                    |
 
 ---
 
@@ -168,6 +168,7 @@ The Dockerfile uses **3 stages** to minimize the final image size:
 ```
 
 **Key techniques:**
+
 - **Layer caching** — `COPY package*.json` before `COPY src/` so dependency installs are cached unless `package.json` changes
 - **Non-root user** — `USER node` for security; the container doesn't run as root
 - **Health checks** — `HEALTHCHECK` instruction polls `/health` every 30s so Docker knows if the app is alive
@@ -177,17 +178,19 @@ The Dockerfile uses **3 stages** to minimize the final image size:
 
 Two compose files for different environments:
 
-| File | Services | Database | Use Case |
-|---|---|---|---|
-| `docker-compose.dev.yml` | `app` + `neon-local` | Neon Local proxy (ephemeral branch) | Local development with hot reload |
-| `docker-compose.prod.yml` | `app` only | Neon Cloud (direct connection) | Production deployment |
+| File                      | Services             | Database                            | Use Case                          |
+| ------------------------- | -------------------- | ----------------------------------- | --------------------------------- |
+| `docker-compose.dev.yml`  | `app` + `neon-local` | Neon Local proxy (ephemeral branch) | Local development with hot reload |
+| `docker-compose.prod.yml` | `app` only           | Neon Cloud (direct connection)      | Production deployment             |
 
 **Dev features:**
+
 - Bind mounts (`./src:/app/src:ro`) for live code reload with `node --watch`
 - `depends_on` with `service_healthy` to wait for the database
 - Isolated `dev-network` bridge network
 
 **Prod features:**
+
 - Resource limits (512MB RAM, 1 CPU)
 - `restart: unless-stopped` for auto-recovery
 - Detached mode (`-d`) for background running
@@ -219,11 +222,11 @@ The `docker-entrypoint.sh` handles the container startup sequence:
 ```javascript
 // src/models/user.model.js
 export const users = pgTable('users', {
-  id:         serial('id').primaryKey(),
-  name:       varchar('name', { length: 255 }).notNull(),
-  email:      varchar('email', { length: 255 }).notNull().unique(),
-  password:   varchar('password', { length: 255 }).notNull(),
-  role:       varchar('role', { length: 50 }).notNull().default('user'),
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  password: varchar('password', { length: 255 }).notNull(),
+  role: varchar('role', { length: 50 }).notNull().default('user'),
   created_at: timestamp().defaultNow().notNull(),
   updated_at: timestamp().defaultNow().notNull(),
 });
@@ -268,6 +271,7 @@ app.use(helmet());
 ```
 
 Helmet sets secure HTTP headers automatically:
+
 - `X-Content-Type-Options: nosniff` — prevents MIME sniffing
 - `X-Frame-Options: DENY` — prevents clickjacking
 - `Strict-Transport-Security` — enforces HTTPS
@@ -280,10 +284,10 @@ Helmet sets secure HTTP headers automatically:
 const aj = arcjet({
   key: process.env.ARCJET_KEY,
   rules: [
-    shield({ mode: "LIVE" }),                    // WAF-like protection
+    shield({ mode: 'LIVE' }), // WAF-like protection
     detectBot({
-      mode: "LIVE",
-      allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:PREVIEW", "CATEGORY:TOOL"],
+      mode: 'LIVE',
+      allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW', 'CATEGORY:TOOL'],
     }),
   ],
 });
@@ -291,11 +295,11 @@ const aj = arcjet({
 
 **Security middleware** applies role-based rate limiting:
 
-| Role | Rate Limit |
-|---|---|
+| Role  | Rate Limit |
+| ----- | ---------- |
 | Admin | 20 req/min |
-| User | 10 req/min |
-| Guest | 5 req/min |
+| User  | 10 req/min |
+| Guest | 5 req/min  |
 
 > **Lesson learned:** The `/health` endpoint must be placed **before** the security middleware — otherwise Docker's healthcheck (`wget`) gets blocked as a "bot" and the container is marked unhealthy.
 
@@ -316,7 +320,7 @@ Controls which domains can make requests to the API.
 ### 5. Password Hashing — bcrypt
 
 ```javascript
-const hash = await bcrypt.hash(password, 10);  // 10 salt rounds
+const hash = await bcrypt.hash(password, 10); // 10 salt rounds
 const isValid = await bcrypt.compare(password, hash);
 ```
 
@@ -368,14 +372,17 @@ const logger = winston.createLogger({
 ### Morgan — HTTP Request Logger
 
 ```javascript
-app.use(morgan('combined', {
-  stream: { write: (message) => logger.info(message.trim()) }
-}));
+app.use(
+  morgan('combined', {
+    stream: { write: message => logger.info(message.trim()) },
+  })
+);
 ```
 
 Morgan logs every HTTP request (method, URL, status, response time) and **pipes the output into Winston** so all logs go through one system.
 
 **Example log output:**
+
 ```json
 {
   "level": "info",
@@ -448,7 +455,7 @@ npm run format:check  # Check if files are formatted
 
 ```javascript
 // tests/app.test.js
-import app from "../src/app.js";
+import app from '../src/app.js';
 import request from 'supertest';
 
 describe('GET /health', () => {
@@ -478,6 +485,7 @@ npm run test          # Run tests with coverage
 ```
 
 **Coverage output:**
+
 ```
 -------------------------|---------|----------|---------|---------|
 File                     | % Stmts | % Branch | % Funcs | % Lines |
@@ -495,62 +503,63 @@ File                     | % Stmts | % Branch | % Funcs | % Lines |
 
 ### Auth Routes (`/api/auth`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/api/auth/sign-up` | ❌ | Register a new user |
-| `POST` | `/api/auth/sign-in` | ❌ | Login and receive JWT cookie |
-| `POST` | `/api/auth/sign-out` | ❌ | Clear JWT cookie |
+| Method | Endpoint             | Auth | Description                  |
+| ------ | -------------------- | ---- | ---------------------------- |
+| `POST` | `/api/auth/sign-up`  | ❌   | Register a new user          |
+| `POST` | `/api/auth/sign-in`  | ❌   | Login and receive JWT cookie |
+| `POST` | `/api/auth/sign-out` | ❌   | Clear JWT cookie             |
 
 ### User Routes (`/api/users`) — Protected
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/api/users` | ✅ | Get all users |
-| `GET` | `/api/users/:id` | ✅ | Get user by ID |
-| `PUT` | `/api/users/:id` | ✅ | Update user (own info; admin can change roles) |
-| `DELETE` | `/api/users/:id` | ✅ | Delete user (own account; admin can delete any) |
+| Method   | Endpoint         | Auth | Description                                     |
+| -------- | ---------------- | ---- | ----------------------------------------------- |
+| `GET`    | `/api/users`     | ✅   | Get all users                                   |
+| `GET`    | `/api/users/:id` | ✅   | Get user by ID                                  |
+| `PUT`    | `/api/users/:id` | ✅   | Update user (own info; admin can change roles)  |
+| `DELETE` | `/api/users/:id` | ✅   | Delete user (own account; admin can delete any) |
 
 ### Other Routes
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/health` | Health check (used by Docker) |
-| `GET` | `/api` | API status message |
+| Method | Endpoint  | Description                   |
+| ------ | --------- | ----------------------------- |
+| `GET`  | `/health` | Health check (used by Docker) |
+| `GET`  | `/api`    | API status message            |
 
 ---
 
 ## 📜 Shell Scripts
 
-| Script | Command | Purpose |
-|---|---|---|
-| `scripts/dev.sh` | `npm run dev:docker` | Validates env, starts Docker Compose dev environment |
-| `scripts/prod.sh` | `npm run prod:docker` | Validates env, starts Docker Compose prod environment |
-| `scripts/docker-entrypoint.sh` | Auto (container start) | Waits for DB (dev only) → runs migrations → starts app |
-| `scripts/healthcheck.sh` | Auto (Docker HEALTHCHECK) | Probes `/health` endpoint with wget |
+| Script                         | Command                   | Purpose                                                |
+| ------------------------------ | ------------------------- | ------------------------------------------------------ |
+| `scripts/dev.sh`               | `npm run dev:docker`      | Validates env, starts Docker Compose dev environment   |
+| `scripts/prod.sh`              | `npm run prod:docker`     | Validates env, starts Docker Compose prod environment  |
+| `scripts/docker-entrypoint.sh` | Auto (container start)    | Waits for DB (dev only) → runs migrations → starts app |
+| `scripts/healthcheck.sh`       | Auto (Docker HEALTHCHECK) | Probes `/health` endpoint with wget                    |
 
 ---
 
 ## 🔐 Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
-| `PORT` | No | Server port (default: `3000`) |
-| `NODE_ENV` | No | `development` or `production` |
-| `LOG_LEVEL` | No | Winston log level (default: `info`) |
-| `DATABASE_URL` | ✅ | Neon PostgreSQL connection string |
-| `NEON_LOCAL` | No | `true` for local proxy, `false` for cloud |
-| `NEON_API_KEY` | Dev only | Neon API key for local proxy |
-| `NEON_PROJECT_ID` | Dev only | Neon project ID for branch creation |
-| `PARENT_BRANCH_ID` | Dev only | Branch to fork from in local dev |
-| `JWT_SECRET` | ✅ | Secret key for JWT signing |
-| `ARCJET_KEY` | ✅ | Arcjet API key for security rules |
-| `ARCJET_ENV` | No | `development` or `production` |
+| Variable           | Required | Description                               |
+| ------------------ | -------- | ----------------------------------------- |
+| `PORT`             | No       | Server port (default: `3000`)             |
+| `NODE_ENV`         | No       | `development` or `production`             |
+| `LOG_LEVEL`        | No       | Winston log level (default: `info`)       |
+| `DATABASE_URL`     | ✅       | Neon PostgreSQL connection string         |
+| `NEON_LOCAL`       | No       | `true` for local proxy, `false` for cloud |
+| `NEON_API_KEY`     | Dev only | Neon API key for local proxy              |
+| `NEON_PROJECT_ID`  | Dev only | Neon project ID for branch creation       |
+| `PARENT_BRANCH_ID` | Dev only | Branch to fork from in local dev          |
+| `JWT_SECRET`       | ✅       | Secret key for JWT signing                |
+| `ARCJET_KEY`       | ✅       | Arcjet API key for security rules         |
+| `ARCJET_ENV`       | No       | `development` or `production`             |
 
 ---
 
 ## 💡 Key Learnings
 
 ### Docker
+
 - **Multi-stage builds** dramatically reduce image size by separating build dependencies from runtime
 - **Layer caching** — ordering `COPY` instructions strategically avoids reinstalling dependencies on every code change
 - **Non-root containers** (`USER node`) are a security best practice
@@ -558,27 +567,32 @@ File                     | % Stmts | % Branch | % Funcs | % Lines |
 - **`.dockerignore`** keeps secrets and unnecessary files out of the image
 
 ### Database
+
 - **Neon Local** provides ephemeral database branches for development — each `docker compose up` gets a fresh, isolated branch
 - **Drizzle migrations** should run inside the container (not on the host) to ensure they target the correct database
 - The Neon serverless driver uses **HTTP**, not TCP — production containers shouldn't wait on port 5432
 
 ### Security
+
 - Security is **layered**: Helmet (headers) → Arcjet (bot/rate/shield) → JWT (auth) → Zod (validation) → bcrypt (passwords)
 - Health endpoints must bypass security middleware or Docker marks the container as unhealthy
 - Rate limiting should be **role-based**, not one-size-fits-all
 - API testing tools (Postman, curl) need to be **allowlisted** in bot detection (`CATEGORY:TOOL`)
 
 ### Logging
+
 - **Structured JSON logs** are essential for production debugging and log aggregation
 - **Morgan + Winston** integration pipes HTTP request logs through a single logging system
 - Separate log files for errors vs. all events speeds up debugging
 
 ### Code Quality
+
 - **ESLint flat config** is the modern standard — cleaner than `.eslintrc` files
 - **Prettier + ESLint** together eliminate formatting debates; `eslint-config-prettier` prevents conflicts
 - Running lint/format in CI ensures consistency across the team
 
 ### Testing
+
 - **Supertest** tests Express routes without starting a real HTTP server
 - External services with WASM (like Arcjet) need **mocks** in the test environment
 - Jest's `moduleNameMapper` redirects imports to mock implementations

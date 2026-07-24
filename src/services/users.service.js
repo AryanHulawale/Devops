@@ -33,7 +33,7 @@ export const getAllUsers = async () => {
  * Excludes the password field from the result.
  * @param {number} id - The user's ID
  */
-export const getUserById = async (id) => {
+export const getUserById = async id => {
   try {
     const [user] = await db
       .select({
@@ -102,7 +102,7 @@ export const updateUser = async (id, updates) => {
  * Delete a user from the database.
  * @param {number} id - The user's ID
  */
-export const deleteUser = async (id) => {
+export const deleteUser = async id => {
   try {
     const [existingUser] = await db
       .select({ id: users.id })

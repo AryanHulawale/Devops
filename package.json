@@ -1,63 +1,61 @@
 {
-    "name":  "devops-implementation",
-    "version":  "1.0.0",
-    "description":  "",
-    "main":  "index.js",
-    "scripts":  {
-                    "test":  "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest",
-                    "dev":  "node --watch src/index.js",
-                    "start":  "node src/index.js",
-                    "lint":  "eslint .",
-                    "lint:fix":  "eslint . --fix",
-                    "format":  "prettier --write . ",
-                    "format:check":  "prettier --check .",
-                    "db:generate":  "drizzle-kit generate",
-                    "db:migrate":  "drizzle-kit migrate",
-                    "db:studio":  "drizzle-kit studio",
-                    "dev:docker":  "sh ./scripts/dev.sh",
-                    "prod:docker":  "sh ./scripts/prod.sh"
-                },
-    "repository":  {
-                       "type":  "git",
-                       "url":  "git+https://github.com/AryanHulawale/Devops.git"
-                   },
-    "keywords":  [
-
-                 ],
-    "author":  "",
-    "license":  "ISC",
-    "type":  "module",
-    "bugs":  {
-                 "url":  "https://github.com/AryanHulawale/Devops/issues"
-             },
-    "homepage":  "https://github.com/AryanHulawale/Devops#readme",
-    "dependencies":  {
-                         "@arcjet/inspect":  "^1.9.1",
-                         "@arcjet/node":  "^1.9.1",
-                         "@eslint/js":  "^10.0.1",
-                         "@neondatabase/serverless":  "^1.1.0",
-                         "bcrypt":  "^6.0.0",
-                         "cookie-parser":  "^1.4.7",
-                         "cors":  "^2.8.6",
-                         "dotenv":  "^17.4.2",
-                         "drizzle-orm":  "^0.45.2",
-                         "eslint":  "^10.6.0",
-                         "eslint-config-prettier":  "^10.1.8",
-                         "eslint-plugin-prettier":  "^5.5.6",
-                         "express":  "^5.2.1",
-                         "helmet":  "^8.3.0",
-                         "jsonwebtoken":  "^9.0.3",
-                         "morgan":  "^1.11.0",
-                         "prettier":  "^3.9.4",
-                         "supertest":  "^7.2.2",
-                         "winston":  "^3.19.0",
-                         "zod":  "^4.4.3"
-                     },
-    "devDependencies":  {
-                            "@emnapi/core":  "^1.11.2",
-                            "@emnapi/runtime":  "^1.11.2",
-                            "cross-env":  "^10.1.0",
-                            "drizzle-kit":  "^0.31.10",
-                            "jest":  "^30.4.2"
-                        }
+  "name": "devops-implementation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest",
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write . ",
+    "format:check": "prettier --check .",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "dev:docker": "sh ./scripts/dev.sh",
+    "prod:docker": "sh ./scripts/prod.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AryanHulawale/Devops.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AryanHulawale/Devops/issues"
+  },
+  "homepage": "https://github.com/AryanHulawale/Devops#readme",
+  "dependencies": {
+    "@arcjet/inspect": "^1.9.1",
+    "@arcjet/node": "^1.9.1",
+    "@eslint/js": "^10.0.1",
+    "@neondatabase/serverless": "^1.1.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "eslint": "^10.6.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.11.0",
+    "prettier": "^3.9.4",
+    "supertest": "^7.2.2",
+    "winston": "^3.19.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@emnapi/core": "^1.11.2",
+    "@emnapi/runtime": "^1.11.2",
+    "cross-env": "^10.1.0",
+    "drizzle-kit": "^0.31.10",
+    "jest": "^30.4.2"
+  }
 }
