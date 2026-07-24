@@ -12,15 +12,15 @@ export const securityMiddleware = async (req, res, next) => {
     switch (role) {
       case 'admin':
         ((limit = 20),
-          (message = 'Admin Limit reached to 20 per minute. Slow Down'));
+        (message = 'Admin Limit reached to 20 per minute. Slow Down'));
         break;
       case 'user':
         ((limit = 10),
-          (message = 'User Limit reached to 10 per minute. Slow Down'));
+        (message = 'User Limit reached to 10 per minute. Slow Down'));
         break;
       case 'guest':
         ((limit = 5),
-          (message = 'Guest Limit reached to 5 per minute. Slow Down'));
+        (message = 'Guest Limit reached to 5 per minute. Slow Down'));
         break;
     }
 
@@ -74,6 +74,8 @@ export const securityMiddleware = async (req, res, next) => {
           message: 'Request Blocked due to security policy',
         });
     }
+
+    console.log(message);
 
     next();
   } catch (e) {
