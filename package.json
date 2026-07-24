@@ -54,12 +54,10 @@
                          "zod":  "^4.4.3"
                      },
     "devDependencies":  {
+                            "@emnapi/core":  "^1.11.2",
+                            "@emnapi/runtime":  "^1.11.2",
                             "cross-env":  "^10.1.0",
                             "drizzle-kit":  "^0.31.10",
                             "jest":  "^30.4.2"
-                        },
-    "overrides":  {
-                      "@emnapi/core":  "1.11.2",
-                      "@emnapi/runtime":  "1.11.2"
-                  }
+                        }
 }
