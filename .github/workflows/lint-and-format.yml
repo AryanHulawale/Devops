@@ -16,15 +16,12 @@ jobs:
     name: ESLint & Prettier Auto-Fix
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
-          token: ${{ secrets.PAT_TOKEN }}   # <-- Use PAT with workflows scope
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -42,13 +39,9 @@ jobs:
         run: npm run lint:fix
         continue-on-error: true
 
-      - name: Commit and push fixes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "style: auto-fix lint and formatting issues"
-          commit_user_name: "github-actions[bot]"
-          commit_user_email: "github-actions[bot]@users.noreply.github.com"
-          # Token is inherited from checkout (PAT_TOKEN)
+      # -----------------------------------------------------------------
+      # Commit and push step REMOVED – no auto‑push anymore
+      # -----------------------------------------------------------------
 
       - name: Verify ESLint (no remaining issues)
         id: eslint_verify
