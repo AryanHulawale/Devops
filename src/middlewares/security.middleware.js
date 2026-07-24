@@ -41,12 +41,10 @@ export const securityMiddleware = async (req, res, next) => {
         userAgent: req.get('User-Agent'),
       });
 
-      return res
-        .status(403)
-        .json({
-          error: 'Forbidden',
-          message: 'Automated requests are not allowed',
-        });
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'Automated requests are not allowed',
+      });
     }
     if (decision.isDenied() && decision.reason.isRateLimit()) {
       logger.warn('RateLimit request exceed ', {
@@ -67,12 +65,10 @@ export const securityMiddleware = async (req, res, next) => {
         method: req.method,
       });
 
-      return res
-        .status(403)
-        .json({
-          error: 'Forbidden',
-          message: 'Request Blocked due to security policy',
-        });
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'Request Blocked due to security policy',
+      });
     }
 
     console.log(message);
@@ -80,11 +76,9 @@ export const securityMiddleware = async (req, res, next) => {
     next();
   } catch (e) {
     console.log('Error by Arcjet Security Middleware : ', e);
-    return res
-      .status(500)
-      .json({
-        error: 'Internal Server Error',
-        message: 'Something went wrong from the security middleware ',
-      });
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Something went wrong from the security middleware ',
+    });
   }
 };

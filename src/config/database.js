@@ -16,7 +16,6 @@ if (process.env.NEON_LOCAL === 'true') {
   neonConfig.poolQueryViaFetch = true;
 }
 
-
 const sql = neon(process.env.DATABASE_URL);
 const db = drizzle(sql);
 

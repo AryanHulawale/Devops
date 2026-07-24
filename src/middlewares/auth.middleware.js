@@ -10,12 +10,10 @@ export const authMiddleware = async (req, res, next) => {
     const token = req.cookies?.token;
 
     if (!token) {
-      return res
-        .status(401)
-        .json({
-          error: 'Authentication required',
-          message: 'No token provided',
-        });
+      return res.status(401).json({
+        error: 'Authentication required',
+        message: 'No token provided',
+      });
     }
 
     const decoded = jwttoken.verify(token);
@@ -24,11 +22,9 @@ export const authMiddleware = async (req, res, next) => {
     next();
   } catch (e) {
     logger.error('Auth middleware error', e);
-    return res
-      .status(401)
-      .json({
-        error: 'Authentication required',
-        message: 'Invalid or expired token',
-      });
+    return res.status(401).json({
+      error: 'Authentication required',
+      message: 'Invalid or expired token',
+    });
   }
 };

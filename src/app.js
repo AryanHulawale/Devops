@@ -24,13 +24,11 @@ app.use(
 // Health check route — placed BEFORE security middleware so Docker
 // healthchecks (wget) are not blocked by Arcjet bot detection.
 app.get('/health', (req, res) => {
-  res
-    .status(200)
-    .json({
-      status: 'OK',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-    });
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
 });
 
 app.use(securityMiddleware);
